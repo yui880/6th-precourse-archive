@@ -15,6 +15,91 @@
 | `Object.assign()`                           | 객체들의 모든 열거 가능한 자체 속성을 복사해 대상 객체에 붙여 넣고 대상 객체를 반환함  |
 
 
+--- 
+### README.md
+```markdown
+# 기능 구현 목록 
+
+## 📌 주제 
+> 
+
+## 📍 프로그램 흐름 
+
+## 📚 기능 목록 
+
+## 📒 예외 목록
+```
+
+---
+### 천 단위 구분자 
+- toLocaleString()가 소수점을 제대로 표현할 수 없는 경우에 대신 사용
+```js
+export const REGEX = {
+  ThousandSeparator: /\B(?=(\d{3})+(?!\d))/g,
+};
+
+formatNumber(number) {
+    return String(number).replace(REGEX.ThousandSeparator, ',');
+}
+```
+
+---
+## Validator
+
+```js
+const Validator = {
+    validateUserInput(input) {
+        this.checkIsEmpty(input);
+    },
+
+    checkIsEmpty(input) {
+        if (input.trim() === '') {
+            throw new ValidationError(ERROR.isEmpty);
+        }
+    },
+
+    checkIsInteger(input) {
+        if (!this.isInteger(input)) {
+            throw new ValidationError(ERROR.isNotNumber);
+        }
+    },
+
+    checkIsPositive(input) {
+        if (Number(input) <= 0) {
+            throw new ValidationError(ERROR.isNotPositive);
+        }
+    },
+    
+    checkHasNonNumeric(inputs) {
+        inputs.forEach((input) => {
+            if (!this.isInteger(input)) {
+                throw new ValidationError(ERROR.hasNonNumeric);
+            }
+        });
+    },
+
+    checkHasNotInRange(inputs) {
+        inputs.forEach((input) => {
+            if (!this.isInRange(input)) {
+                throw new ValidationError(ERROR.hasNotInRange);
+            }
+        });
+    },
+
+    checkIsInRange(input) {
+        if (!this.isInRange(input)) {
+            throw new ValidationError(ERROR.isNotInRange);
+        }
+    },
+
+    isInteger: (input) => !Number.isNaN(Number(input)) && Number.isInteger(Number(input)),
+    isInRange: (input) => Number(input) >= LOTTO_NUMBERS.min && Number(input) <= LOTTO_NUMBERS.max,
+};
+
+export default Validator;
+
+```
+
 ---
 ## 예외 처리
 
@@ -55,6 +140,23 @@ async handleException(callback) {
 
 ---
 ## Test
+
+```js
+describe('클래스 테스트',()=>{
+    describe('기능 테스트', ()=> {
+        test.each()('', ()=> {})
+        test.each()('', ()=> {})
+        
+    })
+    describe('예외 테스트', () => {
+        test.each()('', ()=> {})
+        test.each()('', ()=> {})
+        
+    });
+})
+
+```
+
 
 ### mockQuestions
 ```js
@@ -121,7 +223,6 @@ const errorCount = logSpy.mock.calls.filter(([logMessage]) =>
 
 expect(errorCount).toBe();
 ````
-
 
 
 ### mock
