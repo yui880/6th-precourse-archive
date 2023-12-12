@@ -113,6 +113,42 @@ async #handleException(callback) {
   }
 ```
 
+### 특정 횟수 동안 반복해서 입력받는 방법 
+- 그냥 for을 쓰는 수 밖에..
+```js
+async #makeCoach(coachNameList) {
+    for (const coachName of coachNameList) {
+        const inedibleList = await this.#handleException(() => this.#getInedibleList(coachName));
+        this.#coachList.push(new Coach(coachName, inedibleList));
+    }
+}
+```
+
+---
+### InputView 
+```js
+const InputView = {
+    async read() {
+        return await Console.readLineAsync();
+    },
+};
+
+export default InputView;
+
+```
+
+### OutputView 
+```js
+const OutputView = {
+    printError(message) {
+        Console.print(message);
+    },
+};
+
+export default OutputView;
+
+```
+
 ---
 ## Test
 
@@ -190,6 +226,34 @@ const expectLogContains = (received, expectedLogs) => {
 
 // 사용법
 expectLogContains(getOutput(logSpy), expected);
+```
+
+### mockShuffles
+- rows는 [firstNumber, number] 형태의 요소들로 이루어진 배열
+- 각 배열을 돌면서 firstNumber를 맨 앞에 둔 배열을 반환하는 mock 함수 
+```js
+const mockShuffles = (rows) => {
+    MissionUtils.Random.shuffle = jest.fn();
+
+    rows.reduce((acc, [firstNumber, numbers]) => {
+        return acc.mockReturnValueOnce([
+            firstNumber,
+            ...numbers.filter((number) => number !== firstNumber),
+        ]);
+    }, MissionUtils.Random.shuffle);
+};
+```
+- 사용법
+```js
+const sequenced = (_, idx) => idx + 1;
+mockShuffles([
+    // 구구
+    [2, Array.from({ length: 9 }, sequenced)],
+    [7, Array.from({ length: 9 }, sequenced)],
+    [1, Array.from({ length: 9 }, sequenced)],
+    [4, Array.from({ length: 9 }, sequenced)],
+    [2, Array.from({ length: 9 }, sequenced)],
+])
 ```
 
 ### 에러 메시의 개수 세기 
