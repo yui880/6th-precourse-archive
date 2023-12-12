@@ -20,14 +20,22 @@
 ```markdown
 # 기능 구현 목록 
 
+---
 ## 📌 주제 
 > 
 
+---
 ## 📍 프로그램 흐름 
 
+---
 ## 📚 기능 목록 
 
+---
 ## 📒 예외 목록
+
+---
+## 💡주의할 요구사항
+
 ```
 
 ---
@@ -43,61 +51,21 @@ formatNumber(number) {
 }
 ```
 
----
-## Validator
-
+### 여러 번 자르기 
 ```js
-const Validator = {
-    validateUserInput(input) {
-        this.checkIsEmpty(input);
-    },
+#splitMenu(menus) {
+    return menus
+        .split(SEPARATOR.item)
+        .map((menu) => menu.split(SEPARATOR.count))
+        .map(([name, count]) => [name.trim(), Number(count)]);
+}
+```
 
-    checkIsEmpty(input) {
-        if (input.trim() === '') {
-            throw new ValidationError(ERROR.isEmpty);
-        }
-    },
-
-    checkIsInteger(input) {
-        if (!this.isInteger(input)) {
-            throw new ValidationError(ERROR.isNotNumber);
-        }
-    },
-
-    checkIsPositive(input) {
-        if (Number(input) <= 0) {
-            throw new ValidationError(ERROR.isNotPositive);
-        }
-    },
-    
-    checkHasNonNumeric(inputs) {
-        inputs.forEach((input) => {
-            if (!this.isInteger(input)) {
-                throw new ValidationError(ERROR.hasNonNumeric);
-            }
-        });
-    },
-
-    checkHasNotInRange(inputs) {
-        inputs.forEach((input) => {
-            if (!this.isInRange(input)) {
-                throw new ValidationError(ERROR.hasNotInRange);
-            }
-        });
-    },
-
-    checkIsInRange(input) {
-        if (!this.isInRange(input)) {
-            throw new ValidationError(ERROR.isNotInRange);
-        }
-    },
-
-    isInteger: (input) => !Number.isNaN(Number(input)) && Number.isInteger(Number(input)),
-    isInRange: (input) => Number(input) >= LOTTO_NUMBERS.min && Number(input) <= LOTTO_NUMBERS.max,
-};
-
-export default Validator;
-
+### 2개씩 배열 자르기 
+```js
+#getSectionList(path) {
+    return Array.from({ length: path.length - 1 }, (_, index) => [path[index], path[index + 1]]);
+  }
 ```
 
 ---
@@ -127,7 +95,7 @@ export const ERROR = {
 
 ### handleException (재입력 받기)
 ```js
-async handleException(callback) {
+async #handleException(callback) {
     while (true) {
         try {
             return await callback();
@@ -136,6 +104,13 @@ async handleException(callback) {
         }
     }
 }
+```
+
+### 오류 발생시 아예 처음부터 입력받는 방법 
+```js
+ async run() {
+    await this.handleException(() => this.startProgram());
+  }
 ```
 
 ---
@@ -197,6 +172,8 @@ outputs.forEach((output) => {
 ### getOutput 
 - 여러개의 출력 로그를 LINE_SEPARATOR로 묶어서 하나의 문자열로 만드는 함수
 ```js
+import { EOL as LINE_SEPARATOR } from "os";
+
 const getOutput = (logSpy) => {
     return [...logSpy.mock.calls].join(LINE_SEPARATOR);
 };
@@ -243,4 +220,61 @@ const getCustomProductMock = ({
     return 0;
   }),
 });
+```
+
+---
+## Validator
+
+```js
+const Validator = {
+    validateUserInput(input) {
+        this.checkIsEmpty(input);
+    },
+
+    checkIsEmpty(input) {
+        if (input.trim() === '') {
+            throw new ValidationError(ERROR.isEmpty);
+        }
+    },
+
+    checkIsInteger(input) {
+        if (!this.isInteger(input)) {
+            throw new ValidationError(ERROR.isNotNumber);
+        }
+    },
+
+    checkIsPositive(input) {
+        if (Number(input) <= 0) {
+            throw new ValidationError(ERROR.isNotPositive);
+        }
+    },
+    
+    checkHasNonNumeric(inputs) {
+        inputs.forEach((input) => {
+            if (!this.isInteger(input)) {
+                throw new ValidationError(ERROR.hasNonNumeric);
+            }
+        });
+    },
+
+    checkHasNotInRange(inputs) {
+        inputs.forEach((input) => {
+            if (!this.isInRange(input)) {
+                throw new ValidationError(ERROR.hasNotInRange);
+            }
+        });
+    },
+
+    checkIsInRange(input) {
+        if (!this.isInRange(input)) {
+            throw new ValidationError(ERROR.isNotInRange);
+        }
+    },
+
+    isInteger: (input) => !Number.isNaN(Number(input)) && Number.isInteger(Number(input)),
+    isInRange: (input) => Number(input) >= LOTTO_NUMBERS.min && Number(input) <= LOTTO_NUMBERS.max,
+};
+
+export default Validator;
+
 ```
